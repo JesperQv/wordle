@@ -116,7 +116,9 @@ class WordleViewModel @Inject constructor(
                         }
                     }
                     is Letter.NotInWord -> {
-                        alphabetState[char] = Letter.NotInWord(char)
+                        if (alphabetState[char] is Letter.Unknown) {
+                            alphabetState[char] = Letter.NotInWord(char)
+                        }
                     }
                     else -> {
                         // Do nothing
@@ -172,7 +174,11 @@ class WordleViewModel @Inject constructor(
 
 private fun String.toGuess(correctWord: String): Guess {
     val counted = mutableMapOf<Char, Int>()
-    forEach { counted[it] = 0 }
+    val rightCounted = mutableMapOf<Char, Int>()
+    forEach {
+        counted[it] = 0
+        rightCounted[it] = 0
+    }
     val letters = mutableListOf<Letter?>()
     forEachIndexed { index, character ->
         if (index >= WORD_SIZE) {
@@ -183,6 +189,7 @@ private fun String.toGuess(correctWord: String): Guess {
         } else if (correctWord[index] == character) {
             letters.add(index, Letter.RightPosition(character))
             counted[character] = counted[character]?.plus(1)!!
+            rightCounted[character] = rightCounted[character]?.plus(1)!!
         } else {
             if (counted[character]!! >= correctWord.count { it == character }) {
                 letters.add(index, Letter.NotInWord(character))
@@ -190,6 +197,16 @@ private fun String.toGuess(correctWord: String): Guess {
             } else {
                 letters.add(index, Letter.WrongPosition(character))
                 counted[character] = counted[character]?.plus(1)!!
+            }
+        }
+    }
+
+    letters.forEachIndexed { index, letter ->
+        if (letter != null) {
+            val character = letter.character
+            if (letter is Letter.WrongPosition &&
+                rightCounted[character]!! >= correctWord.count { it == character }) {
+                letters[index] = Letter.NotInWord(character)
             }
         }
     }
