@@ -12,6 +12,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.studioviolet.wordle.ui.theme.Typography
+import com.studioviolet.wordle.ui.theme.WordleGreen
+import com.studioviolet.wordle.ui.theme.WordleYellow
 import com.studioviolet.wordle.viewmodel.Letter
 
 @Composable
@@ -24,8 +27,8 @@ fun LetterComponent(
     val text = character.toString()
 
     val color = when (letter) {
-            is Letter.RightPosition -> Color.Green
-            is Letter.WrongPosition -> Color.Yellow
+            is Letter.RightPosition -> WordleGreen
+            is Letter.WrongPosition -> WordleYellow
             is Letter.NotInWord -> Color.DarkGray
             is Letter.Unknown, null -> Color.LightGray }
 
@@ -48,7 +51,7 @@ fun LetterComponent(
             Text(
                 text = text,
                 textAlign = TextAlign.Center,
-                fontSize = 20.sp,
+                style = Typography.body1,
                 color = Color.Black
             )
         }

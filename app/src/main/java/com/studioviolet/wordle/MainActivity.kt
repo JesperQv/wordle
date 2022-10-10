@@ -9,11 +9,13 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.studioviolet.wordle.ui.game.GuessesComponent
 import com.studioviolet.wordle.ui.game.KeyboardComponent
+import com.studioviolet.wordle.ui.theme.Typography
 import com.studioviolet.wordle.ui.theme.WordleTheme
 import com.studioviolet.wordle.viewmodel.GameState
 import com.studioviolet.wordle.viewmodel.ResultState
@@ -37,6 +39,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     val gameState = viewModel.gameState.value
                     val resultState = viewModel.resultState.value
+                    val correctWord = viewModel.correctWord
                     val alphabetState = viewModel.alphabetState
                     val guessValidityState = viewModel.guessValidityState.value
                     when (gameState) {
@@ -46,6 +49,13 @@ class MainActivity : ComponentActivity() {
                                 verticalArrangement = Arrangement.Center,
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
+                                Text(
+                                    modifier = Modifier
+                                        .padding(bottom = 12.dp),
+                                    text = "Wordle",
+                                    style = Typography.h1,
+                                    textAlign = TextAlign.Center
+                                )
                                 CircularProgressIndicator(
                                     modifier = Modifier
                                         .width(50.dp)
@@ -60,6 +70,12 @@ class MainActivity : ComponentActivity() {
                                     .padding(top = 20.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
+                                Text(
+                                    modifier = Modifier.weight(0.05f),
+                                    text = "Wordle",
+                                    style = Typography.h1,
+                                    textAlign = TextAlign.Center
+                                )
                                 GuessesComponent(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -72,29 +88,41 @@ class MainActivity : ComponentActivity() {
                                     }
                                 )
                                 if (resultState == ResultState.WIN || resultState == ResultState.LOSE) {
-                                    Button(modifier = Modifier
-                                        .width(150.dp)
-                                        .weight(0.05f),
-                                        onClick = { viewModel.resetGame() }) {
-                                        Text(text = "Play again")
+                                    Column(
+                                        modifier = Modifier.fillMaxWidth().weight(0.3f),
+                                        verticalArrangement = Arrangement.Center,
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Text(
+                                            text = "The word was $correctWord",
+                                            style = Typography.h2,
+                                            textAlign = TextAlign.Center
+                                        )
+                                        Button(modifier = Modifier
+                                            .width(150.dp)
+                                            .height(40.dp),
+                                            onClick = { viewModel.resetGame() }) {
+                                            Text(text = "Play again")
+                                        }
                                     }
+                                } else {
+                                    KeyboardComponent(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .weight(0.3f),
+                                        alphabetState = alphabetState,
+                                        guessValidityState = guessValidityState,
+                                        onLetterClicked = { character ->
+                                            viewModel.addCharacterToGuess(character)
+                                        },
+                                        onGuessButtonClicked = {
+                                            viewModel.makeGuess()
+                                        },
+                                        onDeleteButtonClicked = {
+                                            viewModel.dropLastCharacterFromGuess()
+                                        }
+                                    )
                                 }
-                                KeyboardComponent(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .weight(0.3f),
-                                    alphabetState = alphabetState,
-                                    guessValidityState = guessValidityState,
-                                    onLetterClicked = { character ->
-                                        viewModel.addCharacterToGuess(character)
-                                    },
-                                    onGuessButtonClicked = {
-                                        viewModel.makeGuess()
-                                    },
-                                    onDeleteButtonClicked = {
-                                        viewModel.dropLastCharacterFromGuess()
-                                    }
-                                )
                             }
                         }
                     }

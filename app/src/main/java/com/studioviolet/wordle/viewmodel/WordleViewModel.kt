@@ -42,10 +42,12 @@ class WordleViewModel @Inject constructor(
     private val repository: WordleRepository
 ) : ViewModel() {
 
-    private var correctWord: String? = null
+    private var _correctWord: String? = null
     private var guesses = mutableListOf<Guess>()
     private var currentGuess: String = ""
 
+    val correctWord: String
+        get() = _correctWord.orEmpty()
     var guessValidityState = mutableStateOf<GuessValidityState>(GuessValidityState.Invalid)
     var gameState = mutableStateOf<GameState>(GameState.Loading)
     var resultState = mutableStateOf(ResultState.IDLE)
@@ -77,7 +79,7 @@ class WordleViewModel @Inject constructor(
     }
 
     fun makeGuess() {
-        val correctWord = correctWord
+        val correctWord = _correctWord
         if (correctWord == null || currentGuess.length != WORD_SIZE) return
         if (currentGuess == correctWord) {
             guesses.add(currentGuess.toGuess(correctWord))
@@ -99,7 +101,7 @@ class WordleViewModel @Inject constructor(
     }
 
     private fun updateAlphabetState() {
-        val word = correctWord ?: return
+        val word = _correctWord ?: return
         val guess = currentGuess.toGuess(word)
         guess.letters.forEach { letter ->
             if (letter != null) {
@@ -143,7 +145,7 @@ class WordleViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val word = repository.getRandomWord()
-                correctWord = word
+                _correctWord = word
                 gameState.value = GameState.Playing(guesses, currentGuess.toUnknownGuess())
             } catch (e: Exception) {
                 //gameState.value = GameState.Error(e.message.orEmpty())
@@ -178,7 +180,12 @@ private fun String.toGuess(correctWord: String): Guess {
         } else if (correctWord[index] == character) {
             letters.add(index, Letter.RightPosition(character))
         } else {
-            letters.add(index, Letter.WrongPosition(character))
+            //TODO test this
+            if (filter { it == character } > correctWord.filter { it == character }) {
+                letters.add(index, Letter.NotInWord(character))
+            } else {
+                letters.add(index, Letter.WrongPosition(character))
+            }
         }
     }
 
@@ -223,7 +230,7 @@ private fun String.toUnknownGuess(): Guess {
     forEach {
         letters.add(Letter.Unknown(it))
     }
-    while(letters.size < WORD_SIZE) {
+    while (letters.size < WORD_SIZE) {
         letters.add(null)
     }
     return Guess(letters)

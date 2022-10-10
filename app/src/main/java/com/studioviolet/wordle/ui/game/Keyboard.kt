@@ -15,6 +15,9 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.studioviolet.wordle.ui.theme.Typography
+import com.studioviolet.wordle.ui.theme.WordleGreen
+import com.studioviolet.wordle.ui.theme.WordleYellow
 import com.studioviolet.wordle.viewmodel.GuessValidityState
 import com.studioviolet.wordle.viewmodel.Letter
 
@@ -91,15 +94,27 @@ fun KeyboardComponent(
         ) {
             when (guessValidityState) {
                 is GuessValidityState.Valid -> {
-                    Text(text = "Guess")
+                    Text(
+                        text = "Guess",
+                        style = Typography.h2,
+                        color = Color.Black,
+                        textAlign = TextAlign.Center
+                    )
                 }
                 is GuessValidityState.Loading -> {
-                    CircularProgressIndicator(modifier = Modifier
-                        .width(30.dp)
-                        .height(30.dp))
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .width(30.dp)
+                            .height(30.dp)
+                    )
                 }
                 else -> {
-                    Text(text = "Not a word")
+                    Text(
+                        text = "Not a word",
+                        style = Typography.h2,
+                        color = Color.White,
+                        textAlign = TextAlign.Center
+                    )
                 }
             }
         }
@@ -130,6 +145,7 @@ fun DeleteKeyComponent(
                 text = "<",
                 textAlign = TextAlign.Center,
                 fontSize = 20.sp,
+                style = Typography.body1,
                 color = Color.Black
             )
         }
@@ -145,8 +161,8 @@ fun KeyComponent(
     val character = letter?.character ?: ""
     val text = character.toString()
     val backgroundColor = when (letter) {
-        is Letter.RightPosition -> Color.Green
-        is Letter.WrongPosition -> Color.Yellow
+        is Letter.RightPosition -> WordleGreen
+        is Letter.WrongPosition -> WordleYellow
         is Letter.NotInWord -> Color.DarkGray
         is Letter.Unknown, null -> Color.LightGray
     }
@@ -169,6 +185,7 @@ fun KeyComponent(
                 text = text,
                 textAlign = TextAlign.Center,
                 fontSize = 20.sp,
+                style = Typography.body1,
                 color = Color.Black
             )
         }
