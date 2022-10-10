@@ -171,20 +171,25 @@ class WordleViewModel @Inject constructor(
 }
 
 private fun String.toGuess(correctWord: String): Guess {
+    val counted = mutableMapOf<Char, Int>()
+    forEach { counted[it] = 0 }
     val letters = mutableListOf<Letter?>()
     forEachIndexed { index, character ->
         if (index >= WORD_SIZE) {
             // Nothing
         } else if (!correctWord.contains(character)) {
             letters.add(index, Letter.NotInWord(character))
+            counted[character] = counted[character]?.plus(1)!!
         } else if (correctWord[index] == character) {
             letters.add(index, Letter.RightPosition(character))
+            counted[character] = counted[character]?.plus(1)!!
         } else {
-            //TODO test this
-            if (filter { it == character } > correctWord.filter { it == character }) {
+            if (counted[character]!! >= correctWord.count { it == character }) {
                 letters.add(index, Letter.NotInWord(character))
+                counted[character] = counted[character]?.plus(1)!!
             } else {
                 letters.add(index, Letter.WrongPosition(character))
+                counted[character] = counted[character]?.plus(1)!!
             }
         }
     }

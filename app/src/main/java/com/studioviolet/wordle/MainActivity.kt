@@ -94,6 +94,8 @@ class MainActivity : ComponentActivity() {
                                         horizontalAlignment = Alignment.CenterHorizontally
                                     ) {
                                         Text(
+                                            modifier = Modifier
+                                                .padding(bottom = 12.dp),
                                             text = "The word was $correctWord",
                                             style = Typography.h2,
                                             textAlign = TextAlign.Center
