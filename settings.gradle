@@ -14,3 +14,10 @@ dependencyResolutionManagement {
 }
 rootProject.name = "Wordle"
 include ':app'
+include ':libs'
+include ':libs:storage'
+include ':features'
+include ':features:profile'
+include ':libs:user'
+include ':libs:common'
+include ':libs:statistics'

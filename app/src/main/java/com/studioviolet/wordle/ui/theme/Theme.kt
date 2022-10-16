@@ -27,8 +27,9 @@ private val LightColorPalette = lightColors(
     */
 )
 
+//darkTheme: Boolean = isSystemInDarkTheme()
 @Composable
-fun WordleTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
+fun WordleTheme(content: @Composable () -> Unit) {
     val colors = DarkColorPalette
 
     MaterialTheme(
